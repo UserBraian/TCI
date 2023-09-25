@@ -15,6 +15,7 @@ class binary_file_output:
     #open the binary file for writting
     def open_binay_file_output(self):
         self.binary_file = open(self.file_name, "wb")
+        print('open ok')
         
     #close the object of the binary file
     def close_binary_file_output(self):
@@ -39,7 +40,14 @@ class binary_file_output:
     #write the value employing the bits of num_of_bits. It employs the write_bit(self,bit)
     def write_value(self, value, num_of_bits):
         #TO BE IMPLEMENTED
-        pass
-    
+        #value: valor que queremos esccribir --> 10 -> binario: 1010
+        #num of bits: bits que representan el value -->  4bits
+        
+        for i in range(num_of_bits):
+            bit = (value & 1)  #devuelve el ultimo valor (derecha) ex: de 1010 el 0
+            self.write_bit(bit)
+            value = (value>>1)  #desplazamos value una posicion a la derecha
+        
+        
     def size_of_file(self):
         return(self.counter_bytes)

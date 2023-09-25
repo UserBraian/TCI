@@ -24,12 +24,8 @@ class statistics:
     def compute_entropy(self):
    
         histogram = {}
-        
         #histogram[self.image[z][y][x]]
         #TO BE IMPLEMENTED
-        #for y in range(self.image_rows):
-          #  for x in range(self.image_columns):
-          #      a.append(self.image[y][x])
         for z in range(self.image_components):
             for y in range(self.image_rows):
                 for x in range(self.image_columns):
@@ -38,13 +34,18 @@ class statistics:
                     else:
                         histogram[self.image[z][y][x]]=1
          ### ok  
-                
+        
+        self.max_value = max(histogram.keys())
+        self.min_value = min(histogram.keys())
+        self.dynamic_range = self.max_value - self.min_value
+        
         probs={}
         for key in histogram.keys():
             probs[key]=histogram[key]/self.counter
             
         for key in probs.keys():
             self.entropy+=probs[key]*math.log2(1/(probs[key]))
+            
             
         return self.entropy
                                
