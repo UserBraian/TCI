@@ -43,10 +43,9 @@ class binary_file_output:
         #value: valor que queremos esccribir --> 10 -> binario: 1010
         #num of bits: bits que representan el value -->  4bits
         
-        for i in range(num_of_bits):
-            bit = (value & 1)  #devuelve el ultimo valor (derecha) ex: de 1010 el 0
-            self.write_bit(bit)
-            value = (value>>1)  #desplazamos value una posicion a la derecha
+        val=bin(value)
+        val=val[2:]
+        byte=str(val).zfill(num_of_bits)
         
         
     def size_of_file(self):
