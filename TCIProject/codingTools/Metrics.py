@@ -24,10 +24,33 @@ class Metrics:
         #DIMENSIONS OF BOTH IMAGES NEED TO BE VALIDATED
     
     #Check the geometry of the images to be compared
-    def check_geometry(self):
+        if  self.original_image_rows==self.reconstructed_image_rows && self.reconstructed_image_columns==self.original_image_columns:
+            return true
+        else:
+            return false
         pass
     
     #compute metrics    
     def compute(self):
+        if check_geometry(self)==ture:
+             maxval=0
+            for i in self.original_image_rows:
+                for j in self.original_image_columns:
+                    m=self.original_image[i][j]
+                    n=self.reconstructed_image[i][j]
+                    if maxval<n:
+                        maxval=n
+                    suma=suma+(m-n)2
+
+            bits=utils.needed_bits(maxval)
+            self.MSE=1/(self.original_image_rows* self.original_image_columns)*suma
+
+            self.PSNR=10*math.log10((((2**bits)-1)**2)/self.MSE)
+        else:
+            print("no son iguales")
+            
+       
+            
+        
         pass
     
