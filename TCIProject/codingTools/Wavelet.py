@@ -16,69 +16,83 @@ class Wavelet:
         
         
         
-    def forward(self, image_data_quantized):
-    
-        filas = self.original_image.shape[1]
-        columnas = self.original_image.shape[2]//2
-        print("f:", filas)
-        print("c", columnas)
+    def forward(self,image_data_empty):
+        
+        result = image_data_empty
+        print(result.shape)
+        matriz_nivel_actual = self.original_image
         
         #Hay que comprobar que la num de columnas sea un numero par, sino habra que replicar la ultima columna y añadirla a la matriz (imagen)
-        if((columnas%2)!=0):
+        #if((m%2)!=0):
+        #    kk=1
             #get ultima columna de la imagen
             #añadir columna a matriz -> sth like reshape matriz
-            k=1
             
-
-       
         
         a = 0
         b = 0
-        c=0
-        niveles=0
-        result=image_data_quantized
-        L=image_data_quantized
-        H=image_data_quantized
-        matriz_actual_levels=self.original_image
-       
-        for x in range(self.levels):           
-            for z in range(matriz_actual_levels.shape[0]): #Dimension
-                for i in range(matriz_actual_levels.shape[1]): #Filas (fijamos filas)
-                    for j in range((matriz_actual_levels.shape[2]//2)): #Columnas (movemos por cada columna)
-                        
-                        a = int(matriz_actual_levels[z][i][2*j])
-                        b = int(matriz_actual_levels[z][i][2*j+1])
-                        op = b+int(int(a-b)/2)
-                        print(op)
-                        L[z][i][j] = op
-                        H[z][i][j] = int(a-b)
-                        result[z][i][j]=L[z][i][j]
-                        result[z][i][j+matriz_actual_levels.shape[2]//2]= H[z][i][j]
-            print(result)
-
-        #Forward vertical - Trabaja solo con la banda L y nos genera la matriz LL|
-        #                                                                      LH|
-                        #filas      ,    cols
-            LL = np.empty((matriz_actual_levels.shape[0],L.shape[1]//2,L.shape[2]))
-            LH = np.empty((matriz_actual_levels.shape[0], L.shape[1]//2,L.shape[2]))
-            for z in range(L.shape[0]): #Dimension
-                for j in range(L.shape[2]): #Columnas (fijamos columna)
-                    for i in range(L.shape[1]//2): #Filas (movemos por cada fila)
-                        a_L = int(L[z][2*i][j])
-                        b_L = int(L[z][2*i+1][j])
-                        LL[z][i][j] = int(b_L + int(int(a_L-b_L)/2))
-                        LH[z][i][j] = (a_L-b_L)
-            matriz_actual_levels=LL
-            niveles=niveles+1
+        print('matriz actual: \n',matriz_nivel_actual)
         
-
+        for level in range(self.levels):
+            dimension = matriz_nivel_actual.shape[0]
+            filas = matriz_nivel_actual.shape[1]//(2**level)
+            columnas = matriz_nivel_actual.shape[2]//(2**level)
+            print('dim:', dimension)
+            print("fil:", filas)
+            print("col", columnas)
             
+            
+            #Forward horizontal - nos genera  la matriz L|H
+            for dim in range(dimension): #Dimension
+                for fila in range(filas): #Filas (fijamos filas)
+                    for col in range(columnas//2): #Columnas (movemos por cada columna)
+                        a = int(matriz_nivel_actual[dim][fila][2*col])
+                        b = int(matriz_nivel_actual[dim][fila][2*col+1])
+                        
+                        op1 = b+int(int(a-b)/2)
+                        #print('b+ a-b/2 -> op1:',op1)
+                        op2=int(a-b)
+                        #print('a-b -> op2:',op2)
+                        
+                        #banda L:
+                        result[dim][fila][col]=op1
+                        
+                        #banda H:
+                        result[dim][fila][col+columnas//2]=op2
+                        
+            print('result horizontal: \n',result) #Valores correctos (checked)  result ahora es la matriz : L|H
+            
+            matriz_nivel_actual = np.copy(result)
+            
+                
+            #Forward vertical - Trabaja solo con la banda L y nos genera la matriz LL|H
+            #                                                                      LH|H
+            for z in range(matriz_nivel_actual.shape[0]):
+                for j in range(matriz_nivel_actual.shape[2]//2): #Columnas (fijamos columna)
+                    for i in range(matriz_nivel_actual.shape[1]//2): #Filas (movemos por cada fila)
+                        a_L = int(matriz_nivel_actual[z][2*i][j])
+                        #print('a: ',a_L)
+                        b_L = int(matriz_nivel_actual[z][2*i+1][j])
+                        #print('b: ',b_L)
+                        
+                        op1 = b_L+int(int(a_L-b_L)/2)
+                        #print('b + a-b/2 -> op1: ',op1)
+                        
+                        op2 = int(a_L-b_L)
+                        #print('a-b -> op2: ',op2)
+                
+                        #banda LL:
+                        result[z][i][j] = b_L+int(int(a_L-b_L)/2)
+                        
+                        #banda LH:
+                        result[z][i+filas//2][j] = int(a_L-b_L)
+            
+                
+                        
+            print('result vertical: \n',result) #Valores correctos (checked) result ahora es la matriz : LL|H
+            #                                                                                            LH|H
+            
+            matriz_nivel_actual = np.copy(result)
+
+                
         
-        #Forward horizontal - nos genera  la matriz L|H
-        
-        
-        
-    
-    
-    
-    
