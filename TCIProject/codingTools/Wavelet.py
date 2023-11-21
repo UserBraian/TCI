@@ -20,7 +20,7 @@ class Wavelet:
         
         result = image_data_empty
         print(result.shape)
-        matriz_nivel_actual = self.original_image
+        matriz_nivel_actual = np.copy(self.original_image)
         
         #Hay que comprobar que la num de columnas sea un numero par, sino habra que replicar la ultima columna y añadirla a la matriz (imagen)
         #if((m%2)!=0):
@@ -31,7 +31,7 @@ class Wavelet:
         
         a = 0
         b = 0
-        print('matriz actual: \n',matriz_nivel_actual)
+        #print('matriz actual: \n',matriz_nivel_actual)
         
         for level in range(self.levels):
             dimension = matriz_nivel_actual.shape[0]
@@ -60,39 +60,75 @@ class Wavelet:
                         #banda H:
                         result[dim][fila][col+columnas//2]=op2
                         
-            print('result horizontal: \n',result) #Valores correctos (checked)  result ahora es la matriz : L|H
+            #print('result horizontal: \n',result) #Valores correctos (checked)  result ahora es la matriz : L|H
             
             matriz_nivel_actual = np.copy(result)
             
                 
             #Forward vertical - Trabaja solo con la banda L y nos genera la matriz LL|H
             #                                                                      LH|H
-            for z in range(matriz_nivel_actual.shape[0]):
-                for j in range(matriz_nivel_actual.shape[2]//2): #Columnas (fijamos columna)
-                    for i in range(matriz_nivel_actual.shape[1]//2): #Filas (movemos por cada fila)
-                        a_L = int(matriz_nivel_actual[z][2*i][j])
-                        #print('a: ',a_L)
-                        b_L = int(matriz_nivel_actual[z][2*i+1][j])
-                        #print('b: ',b_L)
+            for dim in range(dimension):
+                for col in range(columnas//2): #Columnas (fijamos columna)
+                    for fila in range(filas//2): #Filas (movemos por cada fila)
+                        a_L = int(matriz_nivel_actual[dim][2*fila][col])
+                        b_L = int(matriz_nivel_actual[dim][2*fila+1][col])
                         
                         op1 = b_L+int(int(a_L-b_L)/2)
-                        #print('b + a-b/2 -> op1: ',op1)
                         
                         op2 = int(a_L-b_L)
-                        #print('a-b -> op2: ',op2)
                 
                         #banda LL:
-                        result[z][i][j] = b_L+int(int(a_L-b_L)/2)
+                        result[dim][fila][col] = b_L+int(int(a_L-b_L)/2)
                         
                         #banda LH:
-                        result[z][i+filas//2][j] = int(a_L-b_L)
+                        result[dim][fila+filas//2][col] = int(a_L-b_L)
             
                 
                         
-            print('result vertical: \n',result) #Valores correctos (checked) result ahora es la matriz : LL|H
+            #print('result vertical: \n',result) #Valores correctos (checked) result ahora es la matriz : LL|H
             #                                                                                            LH|H
             
             matriz_nivel_actual = np.copy(result)
+        
+        return matriz_nivel_actual
+    
+    def inverse(self,matrix_wavelet,image_data_empty):
+        matriz_recuperada = image_data_empty
+        matriz_actual = np.copy(matrix_wavelet)
+        
+        for level in reversed(range(self.levels)): #vamos del nivel mas alto hacia el mas bajo (0)
+            dimension = matriz_actual.shape[0]
+            filas = matriz_actual.shape[1]//(2**level)
+            columnas = matriz_actual.shape[2]//(2**level)
+            
+            #recorremos primero verticalmente:
+            for dim in range(dimension):
+                for col in range(columnas//2): #fijamos la columna
+                    for fila in range(filas//2): #recorremos por filas
+                        a = int(matriz_actual[dim][fila][col]) #seria la L (foto profe)
+                        b = int(matriz_actual[dim][fila+filas//2][col]) #seria la H (foto profe)
+                        
+                        #banda LL:
+                        matriz_recuperada[dim][2*fila][col] = int(b+a-(int(b/2)))
+                        
+                        #banda LH:
+                        matriz_recuperada[dim][2*fila+1][col] = int(a-int(b/2))
+            
+            #recorremos horizontalmente:
+            for dim in range(dimension):
+                for fila in range(filas): #fijamos fila
+                    for col in range(columnas//2): #recorremos por columnas
+                        a = int(matriz_recuperada[dim][fila][col])
+                        b = int(matriz_recuperada[dim][fila][col+columnas//2])
+                        
+                        #banda L:
+                        matriz_recuperada[dim][fila][2*col] = int(b+a-(int(b/2)))
+                        
+                        #banda H:
+                        matriz_recuperada[dim][fila][2*col+1] = int(a-int(b/2))
+                        
+        return matriz_recuperada # NO funciona revisarrrrrrrr
+        
 
                 
         
