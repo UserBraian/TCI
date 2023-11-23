@@ -120,8 +120,8 @@ class Wavelet:
             for dim in range(dimension):
                 for fila in range(filas): #fijamos fila
                     for col in range(columnas//2): #recorremos por columnas
-                        a = int(matriz_recuperada[dim][fila][col])
-                        b = int(matriz_recuperada[dim][fila][col+columnas//2])
+                        a = int(matriz_actual[dim][fila][col])
+                        b = int(matriz_actual[dim][fila][col+columnas//2])
                         
                         #banda L:
                         matriz_recuperada[dim][fila][2*col] = int(b+a-(int(b/2)))
