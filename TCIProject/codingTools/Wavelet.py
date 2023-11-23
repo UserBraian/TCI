@@ -113,6 +113,8 @@ class Wavelet:
                         
                         #banda LH:
                         matriz_recuperada[dim][2*fila+1][col] = int(a-int(b/2))
+                        
+            matriz_actual= np.copy(matriz_recuperada)
             
             #recorremos horizontalmente:
             for dim in range(dimension):
@@ -127,7 +129,9 @@ class Wavelet:
                         #banda H:
                         matriz_recuperada[dim][fila][2*col+1] = int(a-int(b/2))
                         
-        return matriz_recuperada # NO funciona revisarrrrrrrr
+            matriz_actual = np.copy(matriz_recuperada)
+                        
+        return matriz_actual
         
 
                 
