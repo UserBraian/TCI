@@ -97,7 +97,7 @@ class Prediction:
     def GodPrediction(self, empty_image):
         image_data_empty = ImageRaw.get_image_structure_empty()
         pred1 = Prediction(original_image)
-        imagen_prima1 = pred1.north(image_data_empty)
+        imagen_prima1 = pred1.north_and_east(image_data_empty)
         residu1 = original_image-imagen_prima1
     
         q=Quantizer(1,10)
@@ -106,16 +106,19 @@ class Prediction:
         
         img_desq=ImageRaw.get_image_structure_empty()
         q.dequantize(img_q, img_desq)
+        
         dimension = img_desq.shape[0]
         filas = img_desq.shape[1]
         columnas = img_desq.shape[2]
         result = np.copy(empty_image)
+        
         p=ImageRaw.get_image_structure_empty()
         x_barret=ImageRaw.get_image_structure_empty()
+        
         for dim in range(dimension):
             for i in range(filas):
                 for j in range(columnas):     
-                    if j=0:
+                    if j==0:
                         p[dim][i][j]=0
                     else:                      
                         p[dim][i][j]=p[dim][i][j-1]+img_desq[dim][i][j]
@@ -129,7 +132,7 @@ class Prediction:
         
         image_data_empty = ImageRaw.get_image_structure_empty()
         pred1 = Prediction(x_barret)
-        imagen_prima1 = pred1.north(image_data_empty)
+        imagen_prima1 = pred1.north_and_east(image_data_empty)
         residu1 = original_image-imagen_prima1
     
         q=Quantizer(1,10)
